@@ -1114,54 +1114,20 @@ unsigned char GetNfactor(int64 nTimestamp) {
 
 int64 static GetBlockValue(int nHeight, int64 nFees)
 {
+    int64 nSubsidy = 12 * COIN;
 
-
-
-
-
-
-
-
-
-int64 nSubsidy = 1200 * COIN;
- 
- 
- if(nHeight < 4)    
-        {
-  
-                nSubsidy = 1 * COIN;  
-        }
-  else if(nHeight >= 4 && nHeight < 9) 
-
-        {
-    nSubsidy = 500000000 * COIN;
-  } 
- 
+    if(nHeight < 4)
+    {
+        nSubsidy = 1 * COIN;
+    }
+    else if(nHeight >= 4 && nHeight < 9)
+    {
+        nSubsidy = 500000000 * COIN;
+    }
     // Subsidy is cut in half every 840000 blocks, which will occur approximately every 4 years
     nSubsidy >>= (nHeight / 840000); // hempcoin: 840k blocks in ~4 years
 
     return nSubsidy + nFees;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    int64 nSubsidy = 50 * COIN;
-
-    // Subsidy is cut in half every 840000 blocks, which will occur approximately every 4 years
-  //  nSubsidy >>= (nHeight / 840000); // hempcoin: 840k blocks in ~4 years
-
-    //return nSubsidy + nFees;
 }
 
 
