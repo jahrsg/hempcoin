@@ -2389,7 +2389,7 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
         // Reject block.nVersion<3 blocks when 95% (75% on testnet) of the network has upgraded:
         if (nVersion < 3)
         {
-            if ((!fTestNet && CBlockIndex::IsSuperMajority(3, pindexPrev, 950, 1000)) ||
+            if ((!fTestNet && CBlockIndex::IsSuperMajority(3, pindexPrev, 750, 1000)) ||
                 (fTestNet && CBlockIndex::IsSuperMajority(3, pindexPrev, 75, 100)))
             {
                 return state.Invalid(error("AcceptBlock() : rejected nVersion<3 block"));
