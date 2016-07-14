@@ -25,12 +25,14 @@ UI_DIR = build
 
 
 
-BOOST_INCLUDE_PATH=C:/deps2/boost_1_54_0
-BOOST_LIB_PATH=C:/deps2/boost_1_54_0/stage/lib
-BDB_INCLUDE_PATH=C:/deps2/db-4.8.30.NC/build_unix
-BDB_LIB_PATH=C:/deps2/db-4.8.30.NC/build_unix
-OPENSSL_INCLUDE_PATH=C:/deps2/openssl-1.0.1g/include
-OPENSSL_LIB_PATH=C:/deps2/openssl-1.0.1g
+BOOST_INCLUDE_PATH=C:/mingw_builds/res/boost/include
+BOOST_LIB_PATH=C:/mingw_builds/res/boost/lib
+BDB_INCLUDE_PATH=C:/mingw_builds/res/berkeleydb
+BDB_LIB_PATH=C:/mingw_builds/res/berkeleydb
+OPENSSL_INCLUDE_PATH=C:/mingw_builds/res/openssl64/include
+OPENSSL_LIB_PATH=C:/mingw_builds/res/openssl64/lib
+MINIUPNPC_INCLUDE_PATH=C:/mingw_builds/res
+MINIUPNPC_LIB_PATH=C:/mingw_builds/res/miniupnpc
 
 
 
@@ -66,6 +68,7 @@ win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
 win32:QMAKE_LFLAGS *= -Wl,--large-address-aware
 # i686-w64-mingw32
 win32:QMAKE_LFLAGS *= -static-libgcc -static-libstdc++
+win32:QMAKE_CXXFLAGS +=-march=i686 -DMINIUPNP_STATICLIB -DHAVE_STRUCT_TIMESPEC -Wliteral-suffix
 
 # use: qmake "USE_QRCODE=1"
 # libqrencode (http://fukuchi.org/works/qrencode/index.en.html) must be installed for support
@@ -237,7 +240,9 @@ HEADERS += src/qt/bitcoingui.h \
     src/threadsafety.h \
     src/limitedmap.h \
     src/qt/macnotificationhandler.h \
-    src/qt/splashscreen.h
+    src/qt/splashscreen.h \
+    src/scrypt_kernel.h \
+    src/miner.h
 
 SOURCES += src/qt/bitcoin.cpp \
     src/qt/bitcoingui.cpp \
@@ -308,7 +313,9 @@ SOURCES += src/qt/bitcoin.cpp \
     src/noui.cpp \
     src/leveldb.cpp \
     src/txdb.cpp \
-    src/qt/splashscreen.cpp
+    src/qt/splashscreen.cpp \
+    src/scrypt_kernel.cpp \
+    src/miner.cpp
 
 RESOURCES += src/qt/bitcoin.qrc
 
@@ -385,11 +392,11 @@ OTHER_FILES += README.md \
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
     macx:BOOST_LIB_SUFFIX = -mt
-    win32:BOOST_LIB_SUFFIX = -mgw48-mt-s-1_54#-mgw44-mt-s-1_50
+    win32:BOOST_LIB_SUFFIX = -mgw46-mt-1_61#-mgw44-mt-s-1_50
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
-    BOOST_THREAD_LIB_SUFFIX =-mgw48-mt-s-1_54#$$BOOST_LIB_SUFFIX
+    BOOST_THREAD_LIB_SUFFIX =-mgw46-mt-1_61#$$BOOST_LIB_SUFFIX
 }
 
 isEmpty(BDB_LIB_PATH) {

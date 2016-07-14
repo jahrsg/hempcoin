@@ -95,6 +95,7 @@ OBJS= \
     obj/init.o \
     obj/keystore.o \
     obj/main.o \
+    obj/miner.o \
     obj/net.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
@@ -106,6 +107,7 @@ OBJS= \
     obj/rpcrawtransaction.o \
     obj/script.o \
     obj/scrypt.o \
+    obj/scrypt_kernel.o \
     obj/sync.o \
     obj/util.o \
     obj/wallet.o \
