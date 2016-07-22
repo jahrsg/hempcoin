@@ -5,16 +5,16 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 0.8.7.1
+!define VERSION 0.8.8.1
 !define COMPANY "hempcoin project"
 !define URL http://www.hempcoin.org/
 
 # MUI Symbol Definitions
 !define MUI_ICON "../share/pixmaps/hempcoin.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "../share/pixmaps/nsis-wizard.bmp"
+#!define MUI_WELCOMEFINISHPAGE_BITMAP "../share/pixmaps/nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "../share/pixmaps/nsis-header.bmp"
+#!define MUI_HEADERIMAGE_BITMAP "../share/pixmaps/nsis-header.bmp"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
@@ -22,7 +22,7 @@ SetCompressor /SOLID lzma
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER hempcoin
 !define MUI_FINISHPAGE_RUN $INSTDIR\hempcoin-qt.exe
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "../share/pixmaps/nsis-wizard.bmp"
+#!define MUI_UNWELCOMEFINISHPAGE_BITMAP "../share/pixmaps/nsis-wizard.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 # Included files
@@ -66,11 +66,33 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File ../release/hempcoin-qt.exe
-    File /oname=COPYING.txt ../COPYING
-    File /oname=readme.txt ../doc/README_windows.txt
+    File Hempcoin-qt.exe
+    File libatomic-1.dll
+    File libgcc_s_dw2-1.dll
+    File libgfortran-3.dll
+    File libgnarl-4.9.dll
+    File libgnat-4.9.dll
+    File libgomp-1.dll
+    File libobjc-4.dll
+    File libquadmath-0.dll
+    File libssp-0.dll
+    File libstdc++-6.dll
+    File libwinpthread-1.dll
+    File /oname=COPYING.txt COPYING
+    File /oname=readme.txt README_windows.txt
     SetOutPath $INSTDIR\daemon
-    File ../src/hempcoind.exe
+    File hempcoind.exe
+    File libatomic-1.dll
+    File libgcc_s_dw2-1.dll
+    File libgfortran-3.dll
+    File libgnarl-4.9.dll
+    File libgnat-4.9.dll
+    File libgomp-1.dll
+    File libobjc-4.dll
+    File libquadmath-0.dll
+    File libssp-0.dll
+    File libstdc++-6.dll
+    File libwinpthread-1.dll
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 
