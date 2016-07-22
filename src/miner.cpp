@@ -13,33 +13,10 @@ extern CWallet* pwalletMain;
 int64 nLastCoinStakeSearchInterval = 0;
 
 
-// Some explaining would be appreciated
-class COrphan
-{
-public:
-    CTransaction* ptx;
-    set<uint256> setDependsOn;
-    double dPriority;
-    double dFeePerKb;
-
-    COrphan(CTransaction* ptxIn)
-    {
-        ptx = ptxIn;
-        dPriority = dFeePerKb = 0;
-    }
-
-    void print() const
-    {
-        printf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
-               ptx->GetHash().ToString().c_str(), dPriority, dFeePerKb);
-        BOOST_FOREACH(uint256 hash, setDependsOn)
-            printf("   setDependsOn %s\n", hash.ToString().c_str());
-    }
-};
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// FlappycoinMiner
+// hempcoinMiner
 //
 
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
@@ -77,6 +54,31 @@ void SHA256Transform(void* pstate, void* pinput, const void* pinit)
     for (int i = 0; i < 8; i++)
         ((uint32_t*)pstate)[i] = ctx.h[i];
 }
+
+// Some explaining would be appreciated
+class COrphan
+{
+public:
+    CTransaction* ptx;
+    set<uint256> setDependsOn;
+    double dPriority;
+    double dFeePerKb;
+
+    COrphan(CTransaction* ptxIn)
+    {
+        ptx = ptxIn;
+        dPriority = dFeePerKb = 0;
+    }
+
+    void print() const
+    {
+        printf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
+               ptx->GetHash().ToString().c_str(), dPriority, dFeePerKb);
+        BOOST_FOREACH(uint256 hash, setDependsOn)
+            printf("   setDependsOn %s\n", hash.ToString().c_str());
+    }
+};
+
 
 uint64 nLastBlockTx = 0;
 uint64 nLastBlockSize = 0;
@@ -141,7 +143,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake
     nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
 
-    // ppcoin: if coinstake available add coinstake tx
+    // hempcoin: if coinstake available add coinstake tx
     static int64 nLastCoinStakeSearchTime = GetAdjustedTime();  // only initialized at startup
     CBlockIndex* pindexPrev = pindexBest;
 
@@ -367,6 +369,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
         pblock->UpdateTime(pindexPrev);
+        pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock); // scruffy: ????
         pblock->nNonce         = 0;
         pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
         pblocktemplate->vTxSigOps[0] = pblock->vtx[0].GetLegacySigOpCount();
@@ -393,6 +396,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStak
     return CreateNewBlock(scriptPubKey, fProofOfStake);
 }
 
+
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce)
 {
     // Update nExtraNonce
@@ -409,7 +413,6 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 
     pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
-
 
 void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1)
 {
@@ -466,7 +469,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         return false;
 
     //// debug print
-    printf("FlappycoinMiner:\n");
+    printf("hampcoinMiner:\n");
     printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
     printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
@@ -475,7 +478,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != hashBestChain)
-            return error("FlappycoinMiner : generated block is stale");
+            return error("hampcoinMiner : generated block is stale");
 
         // Remove key from key pool
         reservekey.KeepKey();
@@ -495,11 +498,11 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     return true;
 }
 
-void static FlappycoinMiner(CWallet *pwallet)
+void static hempcoinMiner(CWallet *pwallet)
 {
-    printf("FlappycoinMiner started\n");
+    printf("hempcoinMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("flappycoin-miner");
+    RenameThread("hempcoin-miner");
 
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
@@ -527,9 +530,13 @@ void static FlappycoinMiner(CWallet *pwallet)
         CBlock *pblock = &pblocktemplate->block;
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
+        printf("Running hempcoinMiner with %"PRIszu" transactions in block (%u bytes)\n", pblock->vtx.size(),
+               ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+
+
         if (fProofOfStake)
         {
-            // ppcoin: if proof-of-stake block found then process block
+            // hempcoin: if proof-of-stake block found then process block
             if (pblock->IsProofOfStake())
             {
                 if (!pblock->SignScryptBlock(*pwalletMain))
@@ -544,9 +551,6 @@ void static FlappycoinMiner(CWallet *pwallet)
             sleep(1000); // 1 second delay
             continue;
         }
-
-        printf("Running FlappycoinMiner with %"PRIszu" transactions in block (%u bytes)\n", pblock->vtx.size(),
-               ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
         //
         // Pre-build hash buffers
@@ -572,14 +576,26 @@ void static FlappycoinMiner(CWallet *pwallet)
             unsigned int nHashesDone = 0;
 
             uint256 thash;
-            char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+
+            unsigned long int scrypt_scratpad_size_current_block = ((1 << (GetNfactor(pblock->nTime) + 1)) * 128 ) + 63;
+
+            char scratchpad[scrypt_scratpad_size_current_block];
+
+            /*printf("nTime -> %d", pblock->nTime);
+            printf("scrypt_scratpad_size_current_block -> %ld", sizeof(scrypt_scratpad_size_current_block));
+            printf("scratchpad -> %d", sizeof(scratchpad));*/
+
             loop
             {
-                scrypt_1024_1_1_256_sp(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad);
+
+                // Generic scrypt
+                scrypt_N_1_1_256_sp_generic(BEGIN(pblock->nVersion), BEGIN(thash), scratchpad, GetNfactor(pblock->nTime));
+
 
                 if (thash <= hashTarget)
                 {
                     // Found a solution
+                    printf("Entering to found a solution section");
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
                     CheckWork(pblock, *pwallet, reservekey);
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
@@ -644,7 +660,7 @@ void static FlappycoinMiner(CWallet *pwallet)
     } }
     catch (boost::thread_interrupted)
     {
-        printf("FlappycoinMiner terminated\n");
+        printf("hempcoinMiner terminated\n");
         throw;
     }
 }
@@ -669,5 +685,5 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet)
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&FlappycoinMiner, pwallet));
+        minerThreads->create_thread(boost::bind(&hempcoinMiner, pwallet));
 }
