@@ -340,6 +340,26 @@ bool CKey::SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig) 
     return true;
 }
 
+bool CKey::SetPubKey(const CPubKey& vchPubKey)
+{
+    CECKey key;
+    if(!key.SetPubKey(vchPubKey))
+    {
+        return false;
+    }
+    return true;
+}
+
+bool CKey::Verify(const uint256 &hash, const std::vector<unsigned char>& vchSig)
+{
+    CECKey key;
+    if(!key.Verify(hash, vchSig))
+    {
+        return false;
+    }
+    return true;
+}
+
 bool CPubKey::Verify(const uint256 &hash, const std::vector<unsigned char>& vchSig) const {
     if (!IsValid())
         return false;

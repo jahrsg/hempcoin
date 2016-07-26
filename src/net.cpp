@@ -9,6 +9,7 @@
 #include "addrman.h"
 #include "ui_interface.h"
 #include "script.h"
+#include "miner.h"
 
 #ifdef WIN32
 #include <string.h>
@@ -1085,7 +1086,7 @@ void ThreadMapPort()
 #else
     /* miniupnpc 1.6 */
 	int error = 0;
-    devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0, 0, 2, &error);
+    devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0, 0, &error);
 #endif
 
     struct UPNPUrls urls;

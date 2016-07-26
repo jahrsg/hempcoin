@@ -13,6 +13,9 @@ extern CWallet* pwalletMain;
 int64 nLastCoinStakeSearchInterval = 0;
 
 
+/** **/
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast,
+                                 const CBlockHeader *pblock, bool IsPoW);
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -362,14 +365,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake
 
         if (pblock->IsProofOfWork())
         {
-            pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees, pindexPrev->GetBlockHash());
+            pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
             pblocktemplate->vTxFees[0] = -nFees;
         }
 
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
         pblock->UpdateTime(pindexPrev);
-        pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock); // scruffy: ????
         pblock->nNonce         = 0;
         pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
         pblocktemplate->vTxSigOps[0] = pblock->vtx[0].GetLegacySigOpCount();

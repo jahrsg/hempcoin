@@ -251,6 +251,10 @@ public:
     //                  0x1D = second key with even y, 0x1E = second key with odd y,
     //                  add 0x04 for compressed keys.
     bool SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig) const;
+
+    bool Verify(const uint256 &hash, const std::vector<unsigned char>& vchSig);
+    bool SetPubKey(const CPubKey& vchPubKey);
+
 };
 
 #endif
