@@ -2,6 +2,7 @@
 
 #include "init.h"
 #include "main.h"
+#include "miner.h"
 #include "uint256.h"
 #include "util.h"
 #include "wallet.h"
@@ -38,9 +39,10 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     CTransaction tx;
     CScript script;
     uint256 hash;
+    bool fPOS = false;
 
     // Simple block creation, nothing special yet:
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
 
     // We can't make transactions until we have inputs
     // Therefore, load 50 blocks :)
@@ -66,7 +68,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     delete pblocktemplate;
 
     // Just to make sure we can still make simple blocks
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey,fPOS));
     delete pblocktemplate;
 
     // block sigops > limit: 1000 CHECKMULTISIG + 1
@@ -84,7 +86,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
         mempool.addUnchecked(hash, tx);
         tx.vin[0].prevout.hash = hash;
     }
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
@@ -104,14 +106,14 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
         mempool.addUnchecked(hash, tx);
         tx.vin[0].prevout.hash = hash;
     }
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
     // orphan in mempool
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
@@ -129,7 +131,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].nValue = 5900000000LL;
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
@@ -140,7 +142,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].nValue = 0;
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
@@ -158,7 +160,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].nValue -= 1000000;
     hash = tx.GetHash();
     mempool.addUnchecked(hash,tx);
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
@@ -172,17 +174,17 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].scriptPubKey = CScript() << OP_2;
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     mempool.clear();
 
     // subsidy changing
     int nHeight = pindexBest->nHeight;
     pindexBest->nHeight = 209999;
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     pindexBest->nHeight = 210000;
-    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey));
+    BOOST_CHECK(pblocktemplate = CreateNewBlockWithKey(reservekey, fPOS));
     delete pblocktemplate;
     pindexBest->nHeight = nHeight;
 
