@@ -57,8 +57,8 @@ const int64 nTargetTimespan = 3.5 * 24 * 60 * 60; // hempcoin: 3.5 days
 const int64 nTargetSpacing = 2.5 * 60; // hempcoin: 2.5 minutes
 const int64 nInterval = nTargetTimespan / nTargetSpacing;
 const int64 nStakeTargetSpacing = 60;
-int nStakeMinAge = 60*60*24*3;  // 3 days
-int nStakeMaxAge = 60*60*24*21; //3 weeks (21 days)
+int nStakeMinAge = 60*60*24*7;  // 7 days
+int nStakeMaxAge = 60*60*24*60; // 60 days (21 days)
 unsigned int nModifierInterval = 6*60*60; // time to elapse before new modifier is computed
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for transaction creation) */
@@ -1147,7 +1147,7 @@ int64 GetBlockValue(int nHeight, int64 nFees)
 // proof of stake reward when mining blocks during PoS
 int64 GetProofOfStakeReward(int64 nCoinAge, unsigned int nBits, int nHeight)
 {
-    int64 nRewardCoinYear = MAX_MONEY * 0.1; // 10% of all coins
+    int64 nRewardCoinYear = MAX_MONEY * 0.05; // 5% of all coins
 
     int64 nSubsidy = nCoinAge * nRewardCoinYear / 365;
     if (fDebug && GetBoolArg("-printcreation"))
@@ -2446,10 +2446,6 @@ bool CBlock::CheckBlock(CValidationState &state, bool fCheckPOW, bool fCheckMerk
         {
             return error("CheckBlock() : CheckTransaction failed");
         }
-        if (GetBlockTime() < (int64_t)tx.nTime)
-        {
-            return state.DoS(50, error("CheckBlock() : block timestamp earlier than transaction timestamp"));
-        }
     }
 
     // Build the merkle tree already. We need it anyway later, and it makes the
@@ -2570,11 +2566,20 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
                     return state.DoS(100, error("AcceptBlock() : block height mismatch in coinbase"));
             }
         }
-        // Reject block.nVersion<3 blocks when 95% (75% on testnet) of the network has upgraded:
+        // Reject block.nVersion<3 blocks when 75% of the network has upgraded:
         if (nVersion < 3)
         {
             if ((!fTestNet && CBlockIndex::IsSuperMajority(3, pindexPrev, 750, 1000)) ||
                 (fTestNet && CBlockIndex::IsSuperMajority(3, pindexPrev, 75, 100)))
+            {
+                return state.Invalid(error("AcceptBlock() : rejected nVersion<3 block"));
+            }
+        }
+        // Reject block.nVersion<4 blocks when 95% (75% on testnet) of the network has upgraded:
+        if (nVersion < 4)
+        {
+            if ((!fTestNet && CBlockIndex::IsSuperMajority(4, pindexPrev, 950, 1000)) ||
+                (fTestNet && CBlockIndex::IsSuperMajority(4, pindexPrev, 75, 100)))
             {
                 return state.Invalid(error("AcceptBlock() : rejected nVersion<3 block"));
             }

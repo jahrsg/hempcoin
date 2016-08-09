@@ -70,7 +70,7 @@ static const int fHaveUPnP = true;
 static const int fHaveUPnP = false;
 #endif
 /** block that symbolizes the end of PoW **/
-const int CUTOFF_HEIGHT = 725000;
+const int CUTOFF_HEIGHT = 279000; // scruffy: start POS after 09-10-2016
 
 
 extern const int64 nTargetTimespan;
@@ -1307,7 +1307,7 @@ class CBlockHeader
 {
 public:
     // header
-    static const int CURRENT_VERSION=3;
+    static const int CURRENT_VERSION=4;
     int nVersion;
     uint256 hashPrevBlock;
     uint256 hashMerkleRoot;
