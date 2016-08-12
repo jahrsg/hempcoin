@@ -71,6 +71,7 @@ static const int fHaveUPnP = false;
 #endif
 /** block that symbolizes the end of PoW **/
 const int CUTOFF_HEIGHT = 279000; // scruffy: start POS after 09-10-2016
+const unsigned int CUTOFF_TIME = 1471003078;
 
 
 extern const int64 nTargetTimespan;

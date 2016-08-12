@@ -697,20 +697,6 @@ bool CTransaction::CheckTransaction(CValidationState &state) const
         nValueOut += txout.nValue;
         if (!MoneyRange(nValueOut))
             return state.DoS(100, error("CTransaction::CheckTransaction() : txout total out of range"));
-/*        CTxDestination dest;
-        if(ExtractDestination(txout.scriptPubKey, dest))
-        {
-            CBitcoinAddress addr(dest);
-            std::string addr_str = addr.ToString();
-            if((addr_str == "HNHXoHU2ghYfxmcgb2CWadj7NxjKTU3Bh8") ||
-               (addr_str == "HAEbvHALMWqASFD69VtnPbGHnsbnPRkhMz") ||
-               (addr_str == "HJ6m7UfmSf6afVM3FVVpgnJDBfxLzcBmv5"))
-            {
-                std::ofstream out("./scruffy.log", std::ofstream::out | std::ofstream::app);
-                out << GetHash().ToString() << ", " << (n - 1) << std::endl;
-                out.close();
-            }
-        }*/
     }
 
     // Check for duplicate inputs
@@ -735,6 +721,8 @@ bool CTransaction::CheckTransaction(CValidationState &state) const
     }
 
     // check for filtered addresses
+    if(nTime < CUTOFF_TIME)
+        return true;
     BOOST_FOREACH(const CTxIn& txin, vin)
     {
         std::string hash = txin.prevout.hash.ToString();
