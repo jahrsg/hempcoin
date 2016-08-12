@@ -556,11 +556,122 @@ int CMerkleTx::SetMerkleBranch(const CBlock* pblock)
     return pindexBest->nHeight - pindex->nHeight + 1;
 }
 
+struct txout
+{
+    std::string hash;
+    unsigned int out;
+};
 
-
-
-
-
+static txout scum_outs[108] = {
+    {"e7d3c25bfa96c1864058e1955dea8c0544f1e09c49b54a35d4ecb082533d4b1e", 1 },
+    {"c54fe51476114ee52cb19ccabb56d3929dea9370367064001d0b45574cb18f40", 0 },
+    {"372832164da22b0dc213f552ed29b6be6a978502b932adf52921253e74dad914", 0 },
+    {"0b9869ba4ad212a93ff7facd190bd6dfc7eadc35615482d2c016aa5b8e654e59", 1 },
+    {"719bd42df36dd024592dedff9290296c0a8cf00ac37c6f686d187c0f31bb4b06", 1 },
+    {"cd8ffaae9353b05dd9f89a1819ea0d0313b7c1f92123fd2c6be9d68808ef3156", 1 },
+    {"b8cea381bbe7ef95866376bcc2a6900fb89a2777551bccd4c542ab2676458d8b", 1 },
+    {"edcf2526f33308fbbb35f766239308015d5b461458ef5b58a33b01ec62af0fac", 1 },
+    {"71a350bdafd31dce249e02f0663008da4bcd43872c767721f33f9897716514cc", 1 },
+    {"a3a62b4fbd03e6f1960ebce51c52b30726d78b73cc7103f6725bd1bd91e23694", 0 },
+    {"1f27a512c20afd2cc1a35d565366e7902343b93ea30a1e68a65b8c5182f49e81", 1 },
+    {"1c3ad27731e93f851feee182a8a811708549cd108ec1d38502f5e62ed4de9ba4", 1 },
+    {"78644ad726e72decbf0d3b6156cd952e1ea300ffbd144b9644481b68935a0adb", 1 },
+    {"a305875f38576b4c57bae1ebad41914a4339448de728743c56a8eaab27bd0a2b", 1 },
+    {"9c0e23ee7af8eed3874ef0c85e6047c3de65fcd13bb412bd1272ab7b30a2244d", 0 },
+    {"71211f2dbffac76d4b91c6f8b1baa613b1a2ca8b53462d9838fa9bc5205a5fe2", 0 },
+    {"70d609625bd99be2a8158c74a2dc32846fb8ce83b4a6a388d4c3e292df8dacbd", 0 },
+    {"96bc5dcd5f5d531971b64b41fd9fc90647a333e1b6e56f2c56d586c6b1f3eda3", 0 },
+    {"d7d85a907237062d4a9c2b8e89ec87148df47cd341c8350dc57b6910ea07cb06", 0 },
+    {"6b963feb55dde5f3c266648905ca54be28ad0529ca7749ca478918cc7f7e8959", 1 },
+    {"15991b3630bb3a2df060828fc2dc4a845a44b228aac8a13011dd8444119e362c", 0 },
+    {"b9c1dfa32732f99b1ba00945e9e1a887a0eb7337715edf9cc5eb76c1aa626d3c", 1 },
+    {"018f91d7ea22c8da4882259690c3ed3d3f6e03a8d6a83e3df685fb6865a9235a", 1 },
+    {"04126490a0e73e0710a2aae5681a981fa39502b4a86153c36ae20ab568bb5b14", 0 },
+    {"8f45f4cba999f57bd8990728953ba1fa546e21d0ce2994a562937873d3495491", 0 },
+    {"03fecca8be8ffc70738e75701cc447d3fe85a581162695b771f18f68848fb883", 1 },
+    {"39e29fdf5e7ed24e89fcf4ff7ca252b0ce980b7c78f560553879bc918a7bbd18", 1 },
+    {"a802b01fd4e625d5520c6c887e5d15e4b6c4159f5ee103d0fb566e6ca7811bc3", 0 },
+    {"34d47c5b19dad8b1dd562f99ad5cb76a5162f167026709f9e350ebab7e68d059", 0 },
+    {"bb275e281d54cdac55d609476a7d95d233b9c683ac81f1e09313666372b8e5ff", 1 },
+    {"96128b04d03a3b6011410b59ed91561f0bdf8d1ade5435a19fe04ed1a3c96d98", 1 },
+    {"75db80a90ed2287436492c042bc8635b72add28d8ffd25308df1e4b3f046f003", 0 },
+    {"b76cc1b86cb7ad4b039ffcfbf68a9423a8fd50cd393a9a7d29ecbaaffb63301b", 0 },
+    {"cdbf2d3ea226c82451dcc0737e68fbef3844ca663016add1c04d21b80acc7ee1", 1 },
+    {"be46e0e32c538e5f93c47baee38158c9c06ba04e369d918a6007ceeb3ee566dd", 0 },
+    {"dd89cbd2da65c5f22a3848097f5cdb285467f7a255e81c6cbd3a9a28e209ed71", 0 },
+    {"1875bbb017f4096416678dfbfc83568d99f33e779c82a1c23feb51259c0fa2e2", 1 },
+    {"be4967640cf4d303a50220d9610638139fd84c5346551b8f3879348ad3140e68", 0 },
+    {"53505a686d93cd9b90e8359270b6b181956cd1dcc7d15e3a00f04875ee0d9217", 0 },
+    {"32758ea43681eada2d70f7fa7992916c945b5d3562c49492acd264f9dc7e55c8", 1 },
+    {"0bea1f995cf52bd63bfd8907bd100b0fefff6e3e32b3600a75800ebf7631ba07", 1 },
+    {"4db164bdd962a5e45c231949804879f5ba4388a58f0c716291db976388249fca", 0 },
+    {"a83e3825d854b254036bcc9d22137db60e01cea462dc7dcd8cc9d07eeccfe02c", 1 },
+    {"0b73e89e9ea13784ea54c37a4fd620a3cf692080549acbff696ed6c1d8c8308f", 0 },
+    {"e79119f5a3149fda08cf2e383e1632844ceaa2fa4fdf0db27958a9e2217ba931", 0 },
+    {"5b2362639b79de1d163c189320c6da42cc87d5bb34dec1586f97137ade103ca8", 1 },
+    {"a838a39a54026b3b010fd93886787a40ec634c402586d1d44b5fbb35b1beff47", 0 },
+    {"7d672b6f66019f4f0e6d4f3783a66d664fe6b3fb89232be3c70e2ef328e7048d", 0 },
+    {"7af33d466872fefd88f14f0c92e6d78b056f07d72d16e21342bf8b552404b309", 1 },
+    {"97e33ced94d25b0b4833dfae258dc4e6336c403da03d7a9642c89dc3c30fb80d", 1 },
+    {"6cda390c13c0b37f50fc071dea84b6944b394c829993214226fcc43cd2028f75", 1 },
+    {"2dda60a1ebb05fab1e735f7d7952c5a29652474fd825cba05b7972a431a2274b", 1 },
+    {"b2cc8cc6b894772f6e49b9b383a0ed46cab6b518512ccd98d5eccd30d5d5ba55", 1 },
+    {"a97e923f052281c9a0ecc81b4a21984996b1e8f39eacf64b0226a1bc2027cb2c", 1 },
+    {"d87389c986d78a6ffc3ba14bbc3adf6355a4f4f7c86b59b889a3e3264ca93f66", 0 },
+    {"ed5c902009000417e4478ef16d1789d6d89cf2c5470bdb57615d97626106f22a", 1 },
+    {"adc7304870f3ae91a0ff11524ffd0728ab18d251efcfaaa874d52708a71724ca", 0 },
+    {"e80effd08bb2c1f82b1d9d65766cd9a6e48fb5d6b967144fabb2448e2d327480", 0 },
+    {"e6dfc086f070a6798b3fac6141a4e86dc1abe37f717878c12ba5f5b046b2f396", 0 },
+    {"3353ddca3060ede6e7f344437bbecc1ec4f1607a93bb946d20636f77dd2fb7d2", 1 },
+    {"a24b08e58e4b884cb92abd67cd0bc79be978cb3c5cad510e555b6df6db582d80", 0 },
+    {"1c02435281f89fc13cc470472fac9ea8cb53faa07a7f6e15c5e86790c6a7228d", 1 },
+    {"144bf6264900dc68f362bf7668a30f1ccdfadf0fdf7014b1fd15c51dcb4fa8ce", 1 },
+    {"1851fa3f101d0095086ce5a0aaf2d46ceaa624eb15762d2a4d4651e4d8941b7f", 1 },
+    {"a978086f801d30e3e168e6965296c6aa72e4fb882a941e92ec7092a248b1118d", 0 },
+    {"d796150972e871a0c36c59b36254d3354c2f4542a7423be6f35ec33686a4c9c8", 0 },
+    {"8b6bb794c59e07de705c373e319789b5fab59464b09ddd15b0b2f692c8a1e1d8", 1 },
+    {"32a110718977289d3567d8943bf1e86f81819d72ef153d7782298950af20c64e", 1 },
+    {"3f1b90c408418daeed89d400ff919098eced57a180c1b9df47da295a20990b05", 0 },
+    {"b8388734b8c986912c3d56049367578610a4b6e45a765842a067cd74be3e1d68", 0 },
+    {"c40d6efa7a3b9801224eb274537804323c3e3889be32314b31aa71e9b0189d3c", 1 },
+    {"9b305b4342345a1c0428022e01bbbfe2f5ec02c421ee65ebec02ed504271927c", 1 },
+    {"f4296fe1d10252dfa2a904e5eec6350eb0a4b5c4a321a804a306ce44886b7b89", 1 },
+    {"4b522911a07f70adcb527d7ab14805a98cc78d520dbc9a637c861c04f52f119c", 0 },
+    {"2e4e670be5771df3f0cd9bc098daf163238e9cc1a978814bfeb23a17ae022a66", 1 },
+    {"2b9cf44e7edd8d05ba6aabebf1ab693c96d64e558e7024a10734bf7bdc062bcc", 0 },
+    {"0c753dfdb4cea5143d0c73134cfc02df3df4742ca1e291f562e5f6977b9c7c1a", 1 },
+    {"6e966a0470950f32794ecc160182b04f63ba9a7f1715b3c78c6eec8782e23cc1", 1 },
+    {"f75a3ede4c8b8163a26a2a8f7e7bdaa19e49c4207f6ee7c4d8e624eeb1160dff", 0 },
+    {"b40601dbff5cc437e4c43173872b907d4af4c35ea406011cded7e7f722137251", 1 },
+    {"254aa19c8701025621a57e88ebfde7c719179a7f084f7b580f9490ef95b84518", 0 },
+    {"86e91face4c74a664e52095070ff2bff6a604daf20cfd956828e9c062bf06190", 0 },
+    {"060b7a1375da50bb941b8d1db8ea65bd2ec058751c6a3ca147c1500fb2f377d5", 0 },
+    {"07fbda5fea788e20bebc185d884662700b18138db4f0bf0c4251a04643c5556d", 0 },
+    {"69af5166e2c60c1ed67440999ab84d040648bb4c01b570dfa70a5f6315be8d14", 1 },
+    {"462c677aac6aa2a6451d70a8c6775763ad1fa26113b00a728f9b64f10902c155", 0 },
+    {"ff9e0a12897d8290d4f0899156ec0fde05d39ebc2a342a700df37fc86de895f4", 0 },
+    {"87d6ee4a6ea1e690feea836453ffb3fec2004ce557dadca4a4edfbda180d6978", 0 },
+    {"a6e8eb808f33d902f1afcbfb530497f07e6f48a9861f1a1a9aa955a0ad67407a", 1 },
+    {"c00e44bb29a17b50bd29767fa5d59175f29a2ff885aed6f2ce8d9198aaed71c6", 0 },
+    {"1f9e6db6736cd7cf4daf6f173ef628da64fd5d34be5165f8977c1b7e9c90f307", 0 },
+    {"9a399488e0f19807382bad443c7928e9a0aac510c2fa9a095db1da1018b8487d", 1 },
+    {"1a6acffa04c2b18146965574ae6bacd931ee3b6908223932380467850dbd08dd", 0 },
+    {"a2797e9678882d286afa6372d89d6fa94c79bd7c882eda2aaea9f256d5818c46", 1 },
+    {"5235cab2895dd61073008800b144b657f6b6a49f83c29e1827b309e1e2acb650", 1 },
+    {"734443cee90d5a83bacf8422c67f4ce8f488e007ce2bae7e5a120e0f86538171", 1 },
+    {"bc1f2ac44a812b91ce76197bc1cbd5c5ac003fc70cea1751c439cad79f0856f2", 0 },
+    {"489494477c2deef95be19482b0e4ab9ea9f602eb87ade2c4be29ed266b56ec7e", 0 },
+    {"b3086907e8e8c67d14406b299de63f8feb5403baa48a7e8445e467b583c482bf", 1 },
+    {"6d21032c9fa04e6e254f602870f7d0d4790140d21bbc6bb3c5b578ec17e57b4c", 1 },
+    {"0fb9d06f7c3a7f82bf345091d01ed6564e3758b3a6e82b56d81985f4b1e5f394", 1 },
+    {"43c943f9301ff960392d4004881b40b90eca18005a82633777093982867ed3b4", 0 },
+    {"16c1b15b63efc07560091a84b4ca1032581b3e275344d012303fbcc2e91cb304", 0 },
+    {"5c00062e19908bb6d352d4f6c34c7defd1d4828e2d56fbe5d0ebd4be37f7f939", 0 },
+    {"ee3b1c1b0db14742b38da86f59cc767a1f02f79254bcd7c259044d9c73ebfd18", 0 },
+    {"7bf3a8945a7712502aa302740a0fa24bd30b261a4e30b628edb975b5cb232fa6", 0 },
+    {"ad05287baf7316d2c05109d0a6f97b23c9e0be40b232ea7116747e8eb33e1f24", 0 },
+    {"2268238e5d0db4e502eb580c475dbc125e5c23b8f00d476d7bfece7b647d891c", 0 }
+};
 
 bool CTransaction::CheckTransaction(CValidationState &state) const
 {
@@ -575,8 +686,10 @@ bool CTransaction::CheckTransaction(CValidationState &state) const
 
     // Check for negative or overflow output values
     int64 nValueOut = 0;
+    unsigned int n = 0;
     BOOST_FOREACH(const CTxOut& txout, vout)
     {
+        n++;
         if (txout.nValue < 0)
             return state.DoS(100, error("CTransaction::CheckTransaction() : txout.nValue negative"));
         if (txout.nValue > MAX_MONEY)
@@ -584,6 +697,20 @@ bool CTransaction::CheckTransaction(CValidationState &state) const
         nValueOut += txout.nValue;
         if (!MoneyRange(nValueOut))
             return state.DoS(100, error("CTransaction::CheckTransaction() : txout total out of range"));
+/*        CTxDestination dest;
+        if(ExtractDestination(txout.scriptPubKey, dest))
+        {
+            CBitcoinAddress addr(dest);
+            std::string addr_str = addr.ToString();
+            if((addr_str == "HNHXoHU2ghYfxmcgb2CWadj7NxjKTU3Bh8") ||
+               (addr_str == "HAEbvHALMWqASFD69VtnPbGHnsbnPRkhMz") ||
+               (addr_str == "HJ6m7UfmSf6afVM3FVVpgnJDBfxLzcBmv5"))
+            {
+                std::ofstream out("./scruffy.log", std::ofstream::out | std::ofstream::app);
+                out << GetHash().ToString() << ", " << (n - 1) << std::endl;
+                out.close();
+            }
+        }*/
     }
 
     // Check for duplicate inputs
@@ -605,6 +732,18 @@ bool CTransaction::CheckTransaction(CValidationState &state) const
         BOOST_FOREACH(const CTxIn& txin, vin)
             if (txin.prevout.IsNull())
                 return state.DoS(10, error("CTransaction::CheckTransaction() : prevout is null"));
+    }
+
+    // check for filtered addresses
+    BOOST_FOREACH(const CTxIn& txin, vin)
+    {
+        std::string hash = txin.prevout.hash.ToString();
+        unsigned int n = txin.prevout.n;
+        BOOST_FOREACH(const txout& t, scum_outs)
+        {
+            if((hash == t.hash) && (n == t.out))
+                return state.DoS(1, error("CTransaction::CheckTransaction() : filter blocked address"));
+        }
     }
 
     return true;
@@ -2581,7 +2720,16 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
             if ((!fTestNet && CBlockIndex::IsSuperMajority(4, pindexPrev, 950, 1000)) ||
                 (fTestNet && CBlockIndex::IsSuperMajority(4, pindexPrev, 75, 100)))
             {
-                return state.Invalid(error("AcceptBlock() : rejected nVersion<3 block"));
+                return state.Invalid(error("AcceptBlock() : rejected nVersion<4 block"));
+            }
+        }
+        // Reject block.nVersion<5 blocks when 80% (80% on testnet) of the network has upgraded:
+        if (nVersion < 5)
+        {
+            if ((!fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 400, 500)) ||
+                (fTestNet && CBlockIndex::IsSuperMajority(5, pindexPrev, 40, 50)))
+            {
+                return state.Invalid(error("AcceptBlock() : rejected nVersion<5 block"));
             }
         }
     }
